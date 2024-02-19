@@ -1,4 +1,6 @@
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,6 +20,7 @@ public class Main {
         BigInteger e = new BigInteger("10706997089278343179826885210060827147463409493523510777431387685771671442851399238492089215565793886478149477207867523308649570870806078530234678604755861159531961701795254771192002888524222172978592793668157761774276617760632894679477733512701268203499385472869419715289158276662873644519187935785549641679751291116387452539507235136056210643936490424871113629840892783091758193454166139128577293272832880405477781482386734589325917451384947487161071406557141600567159179305543501912418793324336259009277406706410254025135571209187854192795599940361924030053346219417234844146017500403546598659553371609984800535467");
         BigInteger c = new BigInteger("15197314651067757355946584379946834164931969541043120164078064085944642365278681324096893476214152328730756513591485443945964837192597487877625274868334436921605239988927931381505891228509512463939955833545400394889094131125180282146395678844330453848518996586269025617541770111167605227113505192399546564506354156746766953521298852057983986116832842122594930311561489326839768342790373109683646472371945983378497288646413872942727101686965536906488145794402081854686784352899478311196208601541472632958619970624634811042002621463373384931741642559063446141175096440251352453487199537100563902295374105432210649258622");
 
+
         BigInteger totient = BigInteger.ZERO;
 
         int bits = n.bitLength();
@@ -27,12 +30,30 @@ public class Main {
             System.out.println("2 * " + n.divide(BigInteger.valueOf(2)));
         } else {
             try {
-                System.out.println("Factorization of " + n + " is: ");
-                BigInteger[] factors = fermatFactorization(n);
-                System.out.println(factors[0] + " * " + factors[1]);
+//                System.out.println("Factorization of " + n + " is: ");
+//                BigInteger[] factors = fermatFactorization(n);
+//                System.out.println(factors[0] + " * " + factors[1]);
 
-                BigInteger p = factors[0];
-                BigInteger q = factors[1];
+                BigInteger p = BigInteger.ZERO;
+                BigInteger q = BigInteger.ZERO;
+
+                List<BigInteger> continuedFractions = getContinuedFractions(e, n);
+                for (BigInteger d : continuedFractions) {
+                    BigInteger k = e.multiply(d).subtract(BigInteger.ONE);
+                    if (d.compareTo(BigInteger.ZERO) > 0 && k.mod(d).equals(BigInteger.ZERO)) {
+                        BigInteger phi = k.divide(d);
+                        BigInteger[] roots = solveQuadraticEquation(BigInteger.ONE, n.subtract(phi).add(BigInteger.ONE).negate(), n);
+                        if (roots != null) {
+                            p = roots[0];
+                            q = roots[1];
+                            break;
+                        }
+                    }
+                }
+
+
+//                BigInteger p = factors[0];
+//                BigInteger q = factors[1];
 
                 System.out.println("p: " + p);
                 System.out.println("q: " + q);
@@ -116,6 +137,43 @@ public class Main {
         }
 
         return new BigInteger[]{p, q};
+    }
+
+
+    public static List<BigInteger> getContinuedFractions(BigInteger e, BigInteger n) {
+        List<BigInteger> fractions = new ArrayList<>();
+        while (!n.equals(BigInteger.ZERO)) {
+            fractions.add(e.divide(n));
+            BigInteger temp = e;
+            e = n;
+            n = temp.mod(n);
+        }
+        return fractions;
+    }
+
+    public static BigInteger[] solveQuadraticEquation(BigInteger a, BigInteger b, BigInteger c) {
+        BigInteger discriminant = b.pow(2).subtract(a.multiply(c).multiply(BigInteger.valueOf(4)));
+        if (discriminant.compareTo(BigInteger.ZERO) < 0) {
+            return null;
+        }
+        BigInteger sqrtDiscriminant = sqrt(discriminant);
+        BigInteger root1 = b.negate().add(sqrtDiscriminant).divide(a.multiply(BigInteger.valueOf(2)));
+        BigInteger root2 = b.negate().subtract(sqrtDiscriminant).divide(a.multiply(BigInteger.valueOf(2)));
+        return new BigInteger[]{root1, root2};
+    }
+
+    public static BigInteger sqrt(BigInteger x) {
+        BigInteger div = BigInteger.ZERO.setBit(x.bitLength() / 2);
+        BigInteger div2 = div;
+        // Loop until we hit the same value twice in a row, or wind
+        // up alternating.
+        for (;;) {
+            BigInteger y = div.add(x.divide(div)).shiftRight(1);
+            if (y.equals(div) || y.equals(div2))
+                return y;
+            div2 = div;
+            div = y;
+        }
     }
 }
 
