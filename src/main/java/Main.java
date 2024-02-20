@@ -75,8 +75,6 @@ public class Main {
         System.out.println("b: " + b);
         return new BigInteger[]{a.subtract(b), a.add(b)};
     }
-
-
 }
 
 
