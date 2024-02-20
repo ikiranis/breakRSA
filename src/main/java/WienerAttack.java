@@ -70,14 +70,14 @@ public class WienerAttack {
             Fraction temp2 = new Fraction(a.get(0).denominator,
                     a.get(0).numerator);
             d.add(temp2.floor());
-            System.out.println("d = " + temp2.floor());
+//            System.out.println("d = " + temp2.floor());
             a.add(temp2.remainder());
-            System.out.println("remainder = " + temp2.remainder());
+//            System.out.println("remainder = " + temp2.remainder());
             p.add((d.get(0).multiply(d.get(1))).add(BigInteger.ONE));
-            System.out.println("p = "
-                    + (d.get(0).multiply(d.get(1))).add(BigInteger.ONE));
+//            System.out.println("p = "
+//                    + (d.get(0).multiply(d.get(1))).add(BigInteger.ONE));
             q.add(d.get(1));
-            System.out.println("q = " + d.get(1));
+//            System.out.println("q = " + d.get(1));
 
         } else {
             if (a.get(iteration - 1).numerator.equals(BigInteger.ZERO)) {
@@ -117,7 +117,7 @@ public class WienerAttack {
             kDdg = new Fraction(p.get(iteration), q.get(iteration));
         }
 
-        System.out.println(kDdg);
+//        System.out.println(kDdg);
 
         BigInteger phi = e.multiply(kDdg.denominator).subtract(BigInteger.ONE)
                 .divide(kDdg.numerator); // from formula phi = (ed -1) / t
